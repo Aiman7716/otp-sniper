@@ -7,119 +7,100 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #fbbf24; --dark: #020617; --card: #1e293b; --text: #f8fafc; }
-        body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; overflow-x: hidden; }
+        body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
         .top-nav { background: #0f172a; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); }
-        .brand { font-size: 1.5rem; font-weight: 900; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .main-content { flex: 1; padding: 40px 20px; display: flex; flex-direction: column; align-items: center; }
-        .sniper-box { width: 100%; max-width: 500px; background: var(--card); border-radius: 25px; padding: 30px; box-shadow: 0 15px 40px rgba(0,0,0,0.4); text-align: center; }
-        .radar { background: #000; border: 1px solid var(--primary); border-radius: 20px; padding: 25px; margin-bottom: 25px; }
-        #mailText { font-size: 1.1rem; color: var(--primary); font-weight: bold; word-break: break-all; min-height: 1.5em; }
-        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: inherit; color: white; }
-        .download-btn { background: rgba(251,191,36,0.1); color: var(--primary); border: 1px solid var(--primary); padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; margin-top: 15px; cursor: pointer; display: inline-block; }
-        #messagesContainer { margin-top: 25px; text-align: right; }
-        .msg-item { background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px; margin-bottom: 10px; border-right: 4px solid var(--primary); }
-        footer { background: #0f172a; padding: 20px; text-align: center; border-top: 1px solid rgba(251,191,36,0.1); margin-top: auto; width: 100%; box-sizing: border-box; }
+        .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
+        .sniper-box { width: 100%; max-width: 500px; background: var(--card); border-radius: 25px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
+        .radar { background: #000; border: 1px solid var(--primary); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        #mailText { font-size: 1.1rem; color: var(--primary); font-weight: bold; word-break: break-all; }
+        .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; font-family: inherit; transition: 0.3s; }
+        
+        /* تصميم الرسائل المطور */
+        #msgBox { margin-top: 20px; text-align: right; }
+        .msg-item { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-right: 5px solid var(--primary); animation: slideIn 0.3s ease; }
+        .msg-body { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; border: 1px dashed #444; }
+        .copy-msg-btn { background: var(--primary); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        
+        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        footer { background: #0f172a; padding: 15px; text-align: center; font-size: 0.8rem; border-top: 1px solid rgba(251,191,36,0.1); }
     </style>
 </head>
 <body>
 
     <header class="top-nav">
-        <div class="brand"><i class="fas fa-crosshairs"></i> OTP SNIPER</div>
-        <div style="font-size: 0.7rem; background: var(--primary); color: #000; padding: 4px 10px; border-radius: 5px; font-weight: bold;">PRO EDITION</div>
+        <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary);">OTP SNIPER 🎯</div>
+        <div style="background: var(--primary); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;">PRO EDITION</div>
     </header>
 
     <div class="main-content">
         <div class="sniper-box">
             <div class="radar">
-                <div id="mailText">جاري تهيئة الرادار...</div>
-                <div class="download-btn" onclick="downloadAccessData()">
-                    <i class="fas fa-file-download"></i> تحميل بيانات الوصول
-                </div>
+                <div id="mailText">قنص الهدف...</div>
             </div>
-
             <div class="btn-group">
-                <button class="btn" style="background:#334155; border:1px solid var(--primary);" onclick="copyTxt()">نسخ العنوان</button>
-                <button class="btn" style="background:#ef4444;" onclick="confirmNew()">هدف جديد</button>
-                <button id="refreshBtn" class="btn" style="grid-column: span 2; background:#10b981;" onclick="fetchMessages()">تحديث الرادار</button>
+                <button class="btn" style="background:#475569;" onclick="copyMail()">نسخ العنوان</button>
+                <button class="btn" style="background:#dc2626;" onclick="newTarget()">هدف جديد</button>
+                <button id="refreshBtn" class="btn" style="grid-column: span 2; background:#059669; margin-top:5px;" onclick="fetchMsgs()">تحديث الرادار</button>
             </div>
-
-            <div id="messagesContainer"></div>
+            <div id="msgBox"></div>
         </div>
     </div>
 
     <footer>
-        <div style="font-size: 0.85rem; opacity: 0.8;">
-            تم التطوير بواسطة <span style="color: var(--primary); font-weight: bold;">م. أيمن الحميري</span><br>
-            <i class="fas fa-envelope"></i> للتواصل: kebriay2030@gmail.com
-        </div>
+        تم التطوير بواسطة <b>م. أيمن الحميري</b>
     </footer>
 
     <script>
-        let address = ""; let token = ""; const password = "AymanElite123";
+        let addr = ""; let token = ""; const pass = "Ayman123";
 
-        async function generateNew() {
-            document.getElementById('mailText').innerText = "قنص عنوان جديد...";
+        async function gen() {
             try {
-                const domRes = await fetch('https://api.mail.tm/domains');
-                const domData = await domRes.json();
-                const domain = domData['hydra:member'][0].domain;
-                const user = Math.random().toString(36).substring(2, 10);
-                address = `${user}@${domain}`;
-
-                await fetch('https://api.mail.tm/accounts', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address, password })
-                });
-
-                const tRes = await fetch('https://api.mail.tm/token', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ address, password })
-                });
-                const tData = await tRes.json();
-                token = tData.token;
-
-                document.getElementById('mailText').innerText = address;
-                document.getElementById('messagesContainer').innerHTML = '<p style="text-align:center; opacity:0.3;">الرادار نظيف..</p>';
-            } catch (e) { document.getElementById('mailText').innerText = "خطأ في السيرفر"; }
+                const d = await fetch('https://api.mail.tm/domains').then(r => r.json());
+                const dom = d['hydra:member'][0].domain;
+                addr = Math.random().toString(36).substring(2,10) + '@' + dom;
+                await fetch('https://api.mail.tm/accounts', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:addr, password:pass})});
+                const t = await fetch('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:addr, password:pass})}).then(r => r.json());
+                token = t.token;
+                document.getElementById('mailText').innerText = addr;
+            } catch(e) { document.getElementById('mailText').innerText = "فشل القنص.. أعد المحاولة"; }
         }
 
-        async function fetchMessages() {
-            if (!token) return;
-            const btn = document.getElementById('refreshBtn');
-            btn.innerText = "جاري المسح...";
+        async function fetchMsgs() {
+            if(!token) return;
+            const b = document.getElementById('refreshBtn'); b.innerText = "جاري مسح الترددات...";
             try {
-                const res = await fetch('https://api.mail.tm/messages', {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                const data = await res.json();
-                const msgs = data['hydra:member'];
-                const container = document.getElementById('messagesContainer');
-                container.innerHTML = msgs.length ? "" : '<p style="text-align:center; opacity:0.3;">لا توجد رسائل</p>';
-                msgs.forEach(m => {
+                const res = await fetch('https://api.mail.tm/messages', {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
+                const msgs = res['hydra:member'];
+                const box = document.getElementById('msgBox');
+                box.innerHTML = msgs.length ? "" : '<p style="opacity:0.3; margin-top:20px;">الرادار نظيف..</p>';
+                
+                for (let m of msgs) {
+                    // جلب محتوى الرسالة الكامل
+                    const fullMsg = await fetch(`https://api.mail.tm/messages/${m.id}`, {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
                     const div = document.createElement('div');
                     div.className = 'msg-item';
-                    div.innerHTML = `<strong>من: ${m.from.address}</strong><br><small>${m.subject || 'بدون موضوع'}</small>`;
-                    container.appendChild(div);
-                });
-            } catch (e) {}
-            btn.innerText = "تحديث الرادار";
+                    div.innerHTML = `
+                        <b>من: ${m.from.address}</b><br>
+                        <small>الموضوع: ${m.subject || 'بدون موضوع'}</small>
+                        <div class="msg-body" id="body-${m.id}">${fullMsg.text || 'لا يوجد نص محتوى'}</div>
+                        <button class="copy-msg-btn" onclick="copyContent('body-${m.id}')">نسخ المحتوى 📋</button>
+                    `;
+                    box.appendChild(div);
+                }
+            } catch(e) { console.log(e); }
+            b.innerText = "تحديث الرادار";
         }
 
-        function copyTxt() { navigator.clipboard.writeText(address); alert("تم النسخ 🎯"); }
-        function downloadAccessData() {
-            const content = `OTP SNIPER DATA\nEmail: ${address}\nToken: ${token}`;
-            const blob = new Blob([content], { type: 'text/plain' });
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = `sniper_data.txt`;
-            a.click();
+        function copyContent(id) {
+            const text = document.getElementById(id).innerText;
+            navigator.clipboard.writeText(text);
+            alert("تم نسخ محتوى الرسالة بنجاح! ✅");
         }
-        function confirmNew() { if(confirm("تغيير الهدف؟")) generateNew(); }
 
-        window.onload = generateNew;
+        function copyMail() { navigator.clipboard.writeText(addr); alert("تم نسخ البريد 🎯"); }
+        function newTarget() { if(confirm("تغيير الهدف؟")) gen(); }
+        window.onload = gen;
     </script>
 </body>
 </html>
