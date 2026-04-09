@@ -3,48 +3,62 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OTP SNIPER | Eng. Ayman</title>
+    <title>OTP SNIPER PRO | Eng. Ayman</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         :root { --primary: #fbbf24; --dark: #020617; --card: #1e293b; --text: #f8fafc; }
         body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; min-height: 100vh; display: flex; flex-direction: column; }
-        .top-nav { background: #0f172a; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); }
+        
+        .top-nav { background: #0f172a; padding: 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); }
         .main-content { flex: 1; padding: 20px; display: flex; flex-direction: column; align-items: center; }
-        .sniper-box { width: 100%; max-width: 500px; background: var(--card); border-radius: 25px; padding: 25px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); text-align: center; }
-        .radar { background: #000; border: 1px solid var(--primary); border-radius: 15px; padding: 20px; margin-bottom: 20px; }
+        
+        .sniper-box { width: 100%; max-width: 500px; background: var(--card); border-radius: 20px; padding: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.5); }
+        .radar-screen { background: #000; border: 1px solid var(--primary); border-radius: 15px; padding: 20px; text-align: center; margin-bottom: 20px; }
+        
         #mailText { font-size: 1.1rem; color: var(--primary); font-weight: bold; word-break: break-all; }
         .btn-group { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; font-family: inherit; transition: 0.3s; }
+        .btn { padding: 12px; border-radius: 10px; border: none; font-weight: bold; cursor: pointer; color: white; font-family: inherit; }
         
-        /* تصميم الرسائل المطور */
-        #msgBox { margin-top: 20px; text-align: right; }
-        .msg-item { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 15px; margin-bottom: 15px; border-right: 5px solid var(--primary); animation: slideIn 0.3s ease; }
-        .msg-body { background: #1e293b; color: #fbbf24; padding: 10px; border-radius: 8px; margin-top: 10px; font-family: monospace; font-size: 0.9rem; white-space: pre-wrap; word-break: break-all; border: 1px dashed #444; }
-        .copy-msg-btn { background: var(--primary); color: #000; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; margin-top: 8px; cursor: pointer; }
+        /* نظام عرض الرسائل الجديد */
+        #msgBox { margin-top: 20px; }
+        .msg-card { background: #0f172a; border: 1px solid #334155; padding: 15px; border-radius: 12px; margin-bottom: 12px; cursor: pointer; border-right: 5px solid var(--primary); transition: 0.3s; }
+        .msg-card:hover { background: #1e293b; }
         
-        @keyframes slideIn { from { opacity: 0; transform: translateX(20px); } to { opacity: 1; transform: translateX(0); } }
+        /* شاشة عرض الرسالة الكاملة (تظهر عند النقر) */
+        .msg-viewer { position: fixed; inset: 0; background: rgba(0,0,0,0.95); z-index: 10000; display: none; padding: 20px; flex-direction: column; }
+        .viewer-content { background: #1e293b; border: 1px solid var(--primary); border-radius: 15px; padding: 20px; max-width: 600px; margin: auto; width: 100%; max-height: 80vh; overflow-y: auto; white-space: pre-wrap; color: var(--primary); font-family: monospace; line-height: 1.6; }
+        .close-viewer { background: #ef4444; color: white; border: none; padding: 10px; border-radius: 8px; margin-top: 15px; width: 100%; font-weight: bold; cursor: pointer; }
+        
         footer { background: #0f172a; padding: 15px; text-align: center; font-size: 0.8rem; border-top: 1px solid rgba(251,191,36,0.1); }
     </style>
 </head>
 <body>
 
     <header class="top-nav">
-        <div style="font-size: 1.5rem; font-weight: 900; color: var(--primary);">OTP SNIPER 🎯</div>
+        <div style="font-size: 1.3rem; font-weight: 900; color: var(--primary);">OTP SNIPER 🎯</div>
         <div style="background: var(--primary); color: #000; padding: 2px 8px; border-radius: 5px; font-size: 0.7rem; font-weight: bold;">PRO EDITION</div>
     </header>
 
     <div class="main-content">
         <div class="sniper-box">
-            <div class="radar">
+            <div class="radar-screen">
                 <div id="mailText">قنص الهدف...</div>
             </div>
+            
             <div class="btn-group">
                 <button class="btn" style="background:#475569;" onclick="copyMail()">نسخ العنوان</button>
                 <button class="btn" style="background:#dc2626;" onclick="newTarget()">هدف جديد</button>
                 <button id="refreshBtn" class="btn" style="grid-column: span 2; background:#059669; margin-top:5px;" onclick="fetchMsgs()">تحديث الرادار</button>
             </div>
+            
             <div id="msgBox"></div>
         </div>
+    </div>
+
+    <div id="viewerOverlay" class="msg-viewer">
+        <div class="viewer-content" id="fullContent"></div>
+        <button class="btn" style="background:var(--primary); color:#000; margin-top:10px;" onclick="copyFull()">نسخ المحتوى بالكامل 📋</button>
+        <button class="close-viewer" onclick="closeViewer()">إغلاق المعاينة</button>
     </div>
 
     <footer>
@@ -63,42 +77,36 @@
                 const t = await fetch('https://api.mail.tm/token', {method:'POST', headers:{'Content-Type':'application/json'}, body:JSON.stringify({address:addr, password:pass})}).then(r => r.json());
                 token = t.token;
                 document.getElementById('mailText').innerText = addr;
-            } catch(e) { document.getElementById('mailText').innerText = "فشل القنص.. أعد المحاولة"; }
+            } catch(e) { document.getElementById('mailText').innerText = "فشل الاتصال.."; }
         }
 
         async function fetchMsgs() {
             if(!token) return;
-            const b = document.getElementById('refreshBtn'); b.innerText = "جاري مسح الترددات...";
-            try {
-                const res = await fetch('https://api.mail.tm/messages', {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
-                const msgs = res['hydra:member'];
-                const box = document.getElementById('msgBox');
-                box.innerHTML = msgs.length ? "" : '<p style="opacity:0.3; margin-top:20px;">الرادار نظيف..</p>';
-                
-                for (let m of msgs) {
-                    // جلب محتوى الرسالة الكامل
-                    const fullMsg = await fetch(`https://api.mail.tm/messages/${m.id}`, {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
-                    const div = document.createElement('div');
-                    div.className = 'msg-item';
-                    div.innerHTML = `
-                        <b>من: ${m.from.address}</b><br>
-                        <small>الموضوع: ${m.subject || 'بدون موضوع'}</small>
-                        <div class="msg-body" id="body-${m.id}">${fullMsg.text || 'لا يوجد نص محتوى'}</div>
-                        <button class="copy-msg-btn" onclick="copyContent('body-${m.id}')">نسخ المحتوى 📋</button>
-                    `;
-                    box.appendChild(div);
-                }
-            } catch(e) { console.log(e); }
+            const b = document.getElementById('refreshBtn'); b.innerText = "جاري القنص...";
+            const res = await fetch('https://api.mail.tm/messages', {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
+            const msgs = res['hydra:member'];
+            const box = document.getElementById('msgBox');
+            box.innerHTML = msgs.length ? "" : '<p style="opacity:0.3; text-align:center; margin-top:20px;">الرادار نظيف..</p>';
+            
+            msgs.forEach(m => {
+                const div = document.createElement('div');
+                div.className = 'msg-card';
+                div.innerHTML = `<b>من: ${m.from.address}</b><br><small>الموضوع: ${m.subject}</small><br><span style="color:var(--primary); font-size:0.7rem;">انقر لفتح الرسالة كاملة 🔓</span>`;
+                div.onclick = () => openMsg(m.id);
+                box.appendChild(div);
+            });
             b.innerText = "تحديث الرادار";
         }
 
-        function copyContent(id) {
-            const text = document.getElementById(id).innerText;
-            navigator.clipboard.writeText(text);
-            alert("تم نسخ محتوى الرسالة بنجاح! ✅");
+        async function openMsg(id) {
+            const m = await fetch(`https://api.mail.tm/messages/${id}`, {headers:{'Authorization':`Bearer ${token}`}}).then(r => r.json());
+            document.getElementById('fullContent').innerText = m.text || "لا يوجد نص محتوى";
+            document.getElementById('viewerOverlay').style.display = 'flex';
         }
 
-        function copyMail() { navigator.clipboard.writeText(addr); alert("تم نسخ البريد 🎯"); }
+        function closeViewer() { document.getElementById('viewerOverlay').style.display = 'none'; }
+        function copyFull() { navigator.clipboard.writeText(document.getElementById('fullContent').innerText); alert("تم النسخ بالكامل ✅"); }
+        function copyMail() { navigator.clipboard.writeText(addr); alert("تم النسخ 🎯"); }
         function newTarget() { if(confirm("تغيير الهدف؟")) gen(); }
         window.onload = gen;
     </script>
