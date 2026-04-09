@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP SNIPER | By Eng. Ayman</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        :root { --primary: #fbbf24; --dark: #020617; --card: #1e293b; --text: #f8fafc; }
+        body { background: var(--dark); color: var(--text); font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; min-height: 100vh; }
+        
+        .top-nav { background: #0f172a; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid var(--primary); }
+        .brand { font-size: 1.5rem; font-weight: 900; color: var(--primary); }
+        
+        .main-stage { flex: 1; padding: 30px 20px; display: flex; flex-direction: column; align-items: center; }
+        .sniper-station { width: 100%; max-width: 700px; background: var(--card); border-radius: 25px; padding: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.5); }
+        
+        .radar-display { background: #000; border: 1px solid var(--primary); border-radius: 20px; padding: 25px; text-align: center; margin-bottom: 25px; }
+        #mailText { font-size: 1.3rem; color: var(--primary); font-weight: bold; word-break: break-all; }
+
+        .btn-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .btn { padding: 15px; border-radius: 12px; border: none; font-weight: bold; cursor: pointer; transition: 0.3s; display: flex; align-items: center; justify-content: center; gap: 8px; }
+        
+        /* تذييل الموقع (التوقيع) */
+        .footer-signature { background: #0f172a; padding: 20px; text-align: center; border-top: 1px solid rgba(251,191,36,0.1); margin-top: 40px; }
+        .signature-text { font-size: 0.85rem; opacity: 0.7; letter-spacing: 0.5px; }
+        .signature-text a { color: var(--primary); text-decoration: none; font-weight: bold; }
+
+        .download-badge { background: rgba(251,191,36,0.1); color: var(--primary); padding: 8px 15px; border-radius: 8px; font-size: 0.75rem; margin-top: 15px; cursor: pointer; display: inline-block; border: 1px solid var(--primary); }
+    </style>
+</head>
+<body>
+
+    <header class="top-nav">
+        <div class="brand">OTP <span>SNIPER</span> 🎯</div>
+        <div style="font-size: 0.8rem; background: var(--primary); color: #000; padding: 4px 10px; border-radius: 5px; font-weight: bold;">PRO EDITION</div>
+    </header>
+
+    <div class="main-stage">
+        <div class="sniper-station">
+            <div class="radar-display">
+                <div id="mailText">تحديد الهدف...</div>
+                <div class="download-badge" onclick="downloadAccessData()">
+                    <i class="fas fa-file-download"></i> تحميل بيانات الوصول (للعودة لاحقاً)
+                </div>
+            </div>
+
+            <div class="btn-grid">
+                <button class="btn" style="background:#334155; color:white; border:1px solid var(--primary);" onclick="copyTxt(address)">نسخ العنوان</button>
+                <button class="btn" style="background:#ef4444; color:white;" onclick="confirmNew()">هدف جديد</button>
+                <button id="refreshBtn" class="btn" style="grid-column: span 2; background:#10b981; color:white;" onclick="fetchMessages()">تحديث الرادار</button>
+            </div>
+
+            <div id="messagesContainer" style="margin-top:25px;"></div>
+        </div>
+    </div>
+
+    <footer class="footer-signature">
+        <div class="signature-text">
+            تم التطوير بواسطة <span style="color: var(--primary);">م. أيمن الحميري</span> 
+            <br>
+            <i class="fas fa-envelope"></i> للتواصل: <a href="mailto:kebriay2030@gmail.com">kebriay2030@gmail.com</a>
+        </div>
+    </footer>
+
+<script>
+    let address = ""; let token = "";
+
+    async function generateNew() {
+        try {
+            const dRes = await fetch('https://api.mail.tm/domains');
+            const dData = await dRes.json();
+            const dom = dData['hydra:member'][0].domain;
+            const user = Math.random().toString(36).substring(2, 10);
+            address = `${user}@${dom}`;
+            const pass = "AymanElite1";
+
+            await fetch('https://api.mail.tm/accounts', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({address, password: pass}) });
+            const tRes = await fetch('https://api.mail.tm/token', { method: 'POST', headers: {'Content-Type': 'application/json'}, body: JSON.stringify({address, password: pass}) });
+            const tData = await tRes.json();
+
+            token = tData.token;
+            document.getElementById('mailText').innerText = address;
+        } catch(e) {}
+    }
+
+    function downloadAccessData() {
+        const text = `بيانات الوصول لموقع OTP SNIPER\n--------------------------\nالعنوان: ${address}\nالرمز السري (Token): ${token}\n--------------------------\nتصميم: م. أيمن الحميري`;
+        const blob = new Blob([text], { type: 'text/plain' });
+        const anchor = document.createElement('a');
+        anchor.download = `sniper_target_${address.split('@')[0]}.txt`;
+        anchor.href = (window.webkitURL || window.URL).createObjectURL(blob);
+        anchor.click();
+    }
+
+    async function fetchMessages() {
+        const btn = document.getElementById('refreshBtn');
+        btn.innerText = "جاري الفحص...";
+        try {
+            const r = await fetch('https://api.mail.tm/messages', { headers: {'Authorization': `Bearer ${token}`} });
+            const d = await r.json();
+            const msgs = d['hydra:member'];
+            const container = document.getElementById('messagesContainer');
+            container.innerHTML = msgs.length ? "" : '<p style="text-align:center; opacity:0.3;">لا توجد رسائل</p>';
+            msgs.forEach(m => {
+                const div = document.createElement('div');
+                div.style = "background:rgba(255,255,255,0.05); padding:15px; border-radius:12px; margin-bottom:10px; border-right:4px solid var(--primary);";
+                div.innerHTML = `<strong>${m.from.address}</strong><br><small>${m.subject}</small>`;
+                container.appendChild(div);
+            });
+        } catch(e) {}
+        btn.innerText = "تحديث الرادار";
+    }
+
+    function copyTxt(t) { navigator.clipboard.writeText(t); alert("تم النسخ 🎯"); }
+    function confirmNew() { if(confirm("تغيير الهدف؟")) generateNew(); }
+    generateNew();
+</script>
+</body>
+</html>
