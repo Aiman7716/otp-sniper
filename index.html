@@ -153,3 +153,57 @@
     </script>
 </body>
 </html>
+        async function fetchMessages() {
+            if (!token) return;
+            const btn = document.getElementById('refreshBtn');
+            const container = document.getElementById('messagesContainer');
+            btn.innerText = "جاري مسح الترددات...";
+            
+            try {
+                const res = await fetch('https://api.mail.tm/messages', {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await res.json();
+                const msgs = data['hydra:member'];
+                
+                container.innerHTML = msgs.length ? "" : '<p style="text-align:center; opacity:0.3;">لا توجد رسائل جديدة</p>';
+                msgs.forEach(m => {
+                    const div = document.createElement('div');
+                    div.className = 'msg-item';
+                    div.innerHTML = `<strong>من: ${m.from.address}</strong><br><small>الموضوع: ${m.subject || 'بدون عنوان'}</small>`;
+                    container.appendChild(div);
+                });
+            } catch (e) {
+                alert("تعذر تحديث الرادار");
+            }
+            btn.innerText = "تحديث الرادار";
+        }
+
+        function copyTxt() {
+            if (!address) return;
+            navigator.clipboard.writeText(address);
+            alert("تم نسخ العنوان للهدف 🎯");
+        }
+
+        function downloadAccessData() {
+            if (!address || !token) return;
+            const content = `بيانات الوصول - OTP SNIPER\n------------------\nالعنوان: ${address}\nالرمز السري: ${token}\n------------------\nبواسطة م. أيمن الحميري`;
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `sniper_data.txt`;
+            a.click();
+        }
+
+        function confirmNew() {
+            if (confirm("هل تريد قنص هدف جديد؟ سيتم فقدان الوصول الحالي ما لم تحفظ البيانات.")) {
+                generateNew();
+            }
+        }
+
+        // بدء التشغيل التلقائي
+        window.onload = generateNew;
+    </script>
+</body>
+</html>
